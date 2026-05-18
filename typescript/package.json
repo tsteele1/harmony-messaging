@@ -1,0 +1,22 @@
+{
+    "name": "@harmony/messaging",
+    "type": "module",
+    "version": "1.0.0",
+    "description": "A wrapper for encoding and decoding Harmony compliant messages to MessagePack.",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "/dist"
+    ],
+    "dependencies": {
+        "@msgpack/msgpack": "^3.1.3"
+    },
+    "devDependencies": {
+        "typescript": "^6.0.3",
+        "vitest": "^4.1.6"
+    },
+    "scripts": {
+        "test": "vitest",
+        "build": "tsc"
+    }
+}
