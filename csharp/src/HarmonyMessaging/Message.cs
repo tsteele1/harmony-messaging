@@ -16,25 +16,30 @@ namespace Harmony {
  * Receivers (string[]): An array of strings representing users to
  *                       send this message to.
  * 
- * Content (string):     A stringified version of the core content
- *                       of the message you want to send over websockets.
- *                       NOTE: When used with other default Harmony services,
- *                       this is expected to be stringified JSON. However,
- *                       none of the internals of this library specifically
- *                       require that to be true.
+ * Content (object):     A generic object that users must take care
+ *                       to know the type of when they encode / decode
+ *                       so that they can safely handle it and cast it
+ *                       back to the relevant types when receiving.
+ *                       NOTE: This does not allow for user defined
+ *                       types. Stick to basic predefined data structures
+ *                       or primitives when using this (ideally, your
+ *                       most complicated data will essentially be JSON
+ *                       anyways when sending data over).
  */
 [MessagePackObject]
 public class Message {
     [Key(0)]
-    public string Type { get; set; }
+    public string Type { get; set; } = null!;
 
     [Key(1)]
-    public string[] Receivers { get; set; }
+    public string[] Receivers { get; set; } = null!;
 
     [Key(2)]
-    public string Content { get; set; }
+    public object Content { get; set; } = null!;
 
-    public Message(string type, string[] receivers, string content) {
+    public Message() {}
+
+    public Message(string type, string[] receivers, object content) {
         this.Type = type;
         this.Receivers = receivers;
         this.Content = content;

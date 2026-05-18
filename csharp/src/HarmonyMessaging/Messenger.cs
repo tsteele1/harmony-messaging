@@ -9,7 +9,15 @@ namespace Harmony {
  * without the user needing to deal with more extensive semantics.
  */
 public class Messenger {
-    MessagePackSerializerOptions options = MessagePackSerializerOptions.Standard;
+    MessagePackSerializerOptions options;
+
+    public Messenger() {
+        options = MessagePackSerializerOptions.Standard;
+    }
+
+    public Messenger(MessagePackSerializerOptions options) {
+        this.options = options;
+    }
 
     /*
      * Safely create and return a Message Object.
@@ -18,8 +26,8 @@ public class Messenger {
      *
      * Throws an ArgumentException if message is null or empty.
      */
-    public Message CreateMessage(string messageType, string[] receivers, string message) {
-        if (string.IsNullOrEmpty(message)) {
+    public Message CreateMessage(string messageType, string[] receivers, object message) {
+        if (message == null) {
             throw new ArgumentException("Expected message With Content.");
         }
 
@@ -33,7 +41,7 @@ public class Messenger {
      * Throws an Exception if serialization fails.
      */
     public byte[] SerializeMessage(Message message) {
-        if (string.IsNullOrEmpty(message.Content)) {
+        if (message.Content == null) {
             throw new ArgumentException("Expected message.Content With Content.");
         }
 
@@ -41,23 +49,15 @@ public class Messenger {
             return MessagePackSerializer.Serialize<Message>(message, options);
         }
         catch (MessagePackSerializationException mpse) {
-            throw new Exception("Error in SerializeMessage:", mpse);
+            throw new Exception($"Error in SerializeMessage: {mpse}", mpse);
         }
     }
 
     /*
      * A combination of CreateMessage and SerializeMessage.
      */
-    public byte[] CreateAndSerializeMessage(string messageType, string[] receivers, string messageData) {
-        try {
-            return SerializeMessage(new Message(messageType, receivers, messageData));
-        }
-        catch (ArgumentException) {
-            throw;
-        }
-        catch (Exception) {
-            throw;
-        }
+    public byte[] CreateAndSerializeMessage(string messageType, string[] receivers, object messageData) {
+        return SerializeMessage(CreateMessage(messageType, receivers, messageData));
     }
 
     /*
