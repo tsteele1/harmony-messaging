@@ -12,7 +12,7 @@
 
   <PropertyGroup>
     <PackageId>HarmonyMessaging</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <RepositoryUrl>https://github.com/tsteele1/harmony-messaging</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
