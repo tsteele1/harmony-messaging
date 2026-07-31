@@ -1,4 +1,4 @@
-import { Message } from "./messaging.ts"
+import type { Message } from "./messaging"
 
 export enum MessageResult {
     SUCCESS,
