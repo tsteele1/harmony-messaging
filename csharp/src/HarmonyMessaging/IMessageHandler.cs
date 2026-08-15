@@ -1,26 +1,20 @@
 namespace Harmony {
 
 /*
- * A generic Message Handling Interface.
+ * A generic Message Handling Interface intended for usage with clients.
  *
  * Injected into other Harmony Services so a user can define custom Message
  * handling code alongisde Harmony's pre-configured services.
  */
-public interface IMessageHandler {
-    /*
-     * Indicators for how your HandleMessage definition handled the received Message.
-     *
-     * SUCCESS: Everything went perfectly.
-     * FINISHED: A special code for the server to indicate we are done handling all Message Objects.
-     * ERROR: Something went wrong when handling a Message, and Harmony should recognize that.
-     */
-    public enum Result {
-        SUCCESS,
-        FINISHED,
-        ERROR
-    }
+public interface IClientMessageHandler {
+    public void HandleMessage(Message message, IClientMessaging messaging);
+}
 
-    public Result HandleMessage(Message message);
+/*
+ * Same as IMessageHandler, except intended for usage with servers.
+*/
+public interface IServerMessageHandler {
+    public void HandleMessage(Message message, IServerMessaging messaging);
 }
 
 }

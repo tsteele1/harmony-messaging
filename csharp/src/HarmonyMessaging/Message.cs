@@ -7,7 +7,11 @@ namespace Harmony {
  *
  * Used internally to wrap any message type a user might
  * create with additional information and convert it to
- * MessagePack.
+ * a MessagePack array for optimized serialization / deserialization
+ * (i.e. the binary will look something like:
+ *  [Type, Receivers, Content], so when it's deserialized, and you
+ *  want to write your own Messenger, it will have the three Message 
+ *  variables in an array).
  *
  * Type (string):        Additional context for what type of message
  *                       is being sent across

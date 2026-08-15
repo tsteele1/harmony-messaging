@@ -15,6 +15,9 @@ public class Messenger {
         options = MessagePackSerializerOptions.Standard;
     }
 
+    /*
+     * For advanced users who want to use the underlying library's features more.
+    */
     public Messenger(MessagePackSerializerOptions options) {
         this.options = options;
     }

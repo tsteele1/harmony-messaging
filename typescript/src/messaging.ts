@@ -15,7 +15,7 @@ import { encode, decode } from "@msgpack/msgpack"
 export interface Message {
     type: string,
     receivers: string[],
-    content: Record<string, any>
+    content: unknown
 }
 
 /*
@@ -36,7 +36,7 @@ export class MessageValidationError extends Error {
 /*
  * Alias for Creating an object of the Message Class.
  */
-export function createMessage(type: string, receivers: string[], content: Record<string, any>): Message {
+export function createMessage(type: string, receivers: string[], content: unknown): Message {
     return { type, receivers, content };
 }
 
@@ -53,36 +53,35 @@ export function serializeMessage(message: Message): Uint8Array {
         throw new TypeError("Cannot Serialize null or undefined Messages");
     }
 
-    return encode(message);
+    return encode([message.type, message.receivers, message.content]);
 }
 
 /*
  * A combination of createMessage and SerializeMessage
  */
-export function createAndSerializeMessage(type: string, receivers: string[], content: Record<string, any>): Uint8Array {
-    return serializeMessage(createMessage(type, receivers, content));
+export function createAndSerializeMessage(type: string, receivers: string[], content: unknown): Uint8Array {
+    return encode([type, receivers, content]);
 }
 
-/*
- * A custom Type Guard for ensuring decoded objects are valid Messages.
- * Used for ensuring users will always get a valid Message or Error.
- *
- * If returns true: decoded will be treated recognized as a Message going forward.
- */
-function isValidMessage(decoded: any): decoded is Message {
-    if (!decoded || typeof decoded !== "object" || Array.isArray(decoded)) {
+
+function isValidEncodedArray(decoded: unknown): decoded is unknown[] {
+    if (!Array.isArray(decoded)) {
+        return false;
+    }
+    else if (decoded.length != 3) {
         return false;
     }
 
-    let decodedTest = decoded as Record<string, unknown>;
-
-    return (
-        typeof decodedTest.type === "string" &&
-        Array.isArray(decodedTest.receivers) && decodedTest.receivers.every(r => typeof r == "string") &&
-        decodedTest.hasOwnProperty("content")
-    );
+    return true;
 }
 
+function isValidString(value: unknown): value is string {
+    return typeof value == "string";
+}
+
+function isValidStringArr(value: unknown): value is string[] {
+    return Array.isArray(value) && value.every(r => typeof r == "string");
+}
 
 /*
  * Convert an encodedMessage back into a regular Message.
@@ -103,9 +102,21 @@ export function deserializeMessage(encodedMessage: Uint8Array): Message {
             { cause: error });
     }
 
-    if (!isValidMessage(decoded)) {
-        throw new MessageValidationError(`Unable to Decode and Validate Encoded Message.`);
+    if (!isValidEncodedArray(decoded)) {
+        throw new MessageValidationError(`Unable to Decoded Encoded Message into a Valid Array.`);
+    }
+    else if (!isValidString(decoded[0])) {
+        throw new MessageValidationError(`Unable to Decoded Encoded Message Type to String.`);
+    }
+    else if (!isValidStringArr(decoded[1])) {
+        throw new MessageValidationError(`Unable to Decode Encoded Receivers to String Array.`);
     }
 
-    return decoded;
+    const decodedMessage: Message = {
+        type: decoded[0],
+        receivers: decoded[1],
+        content: decoded[2]
+    };
+
+    return decodedMessage;
 }
