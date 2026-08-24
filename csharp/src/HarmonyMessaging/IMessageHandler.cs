@@ -7,14 +7,14 @@ namespace Harmony {
  * handling code alongisde Harmony's pre-configured services.
  */
 public interface IClientMessageHandler {
-    public void HandleMessage(Message message, IClientMessaging messaging);
+    public Task HandleMessage(Message message, IClientMessaging messaging);
 }
 
 /*
  * Same as IMessageHandler, except intended for usage with servers.
 */
 public interface IServerMessageHandler {
-    public void HandleMessage(Message message, IServerMessaging messaging);
+    public Task HandleMessage(Message message, IServerMessaging messaging);
 }
 
 }
